@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTMS 病患登錄系統</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0891b2;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: rgba(15, 23, 42, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        .nav-tab:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+        
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--text-primary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        thead {
+            background: var(--bg-main);
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border);
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        tbody tr:hover {
+            background: var(--bg-main);
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Status Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-completed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧠 RTMS 病患登錄系統</h1>
+            <p>重複經顱磁刺激治療管理平台 | Repetitive Transcranial Magnetic Stimulation</p>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">總覽</button>
+            <button class="nav-tab" onclick="switchTab('patients')">病患管理</button>
+            <button class="nav-tab" onclick="switchTab('treatments')">治療記錄</button>
+            <button class="nav-tab" onclick="switchTab('assessments')">評估量表</button>
+            <button class="nav-tab" onclick="switchTab('export')">匯出資料</button>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalPatients">0</h3>
+                    <p>總病患數</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activePatients">0</h3>
+                    <p>治療中</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="completedPatients">0</h3>
+                    <p>已完成</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalSessions">0</h3>
+                    <p>總治療次數</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>最近治療記錄</h2>
+                </div>
+                <div id="recentTreatments"></div>
+            </div>
+        </div>
+        
+        <!-- Patients Tab -->
+        <div id="patients" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>病患列表</h2>
+                    <button class="btn btn-primary" onclick="openPatientModal()">+ 新增病患</button>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" id="patientSearch" placeholder="搜尋病患（姓名、病歷號）" onkeyup="searchPatients()">
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>病歷號</th>
+                                <th>姓名</th>
+                                <th>診斷</th>
+                                <th>開始日期</th>
+                                <th>狀態</th>
+                                <th>療程進度</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Treatments Tab -->
+        <div id="treatments" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>治療記錄</h2>
+                    <button class="btn btn-primary" onclick="openTreatmentModal()">+ 新增治療記錄</button>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" id="treatmentSearch" placeholder="搜尋病患姓名" onkeyup="searchTreatments()">
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>病患</th>
+                                <th>刺激部位</th>
+                                <th>強度 (% MT)</th>
+                                <th>頻率 (Hz)</th>
+                                <th>脈衝數</th>
+                                <th>序列數</th>
+                                <th>備註</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="treatmentsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assessments Tab -->
+        <div id="assessments" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>評估量表記錄</h2>
+                    <button class="btn btn-primary" onclick="openAssessmentModal()">+ 新增評估</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>病患</th>
+                                <th>量表類型</th>
+                                <th>分數</th>
+                                <th>時間點</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assessmentsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Export Tab -->
+        <div id="export" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>匯出資料</h2>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>選擇匯出類型</label>
+                        <select id="exportType">
+                            <option value="all">完整資料（病患+治療+評估）</option>
+                            <option value="patients">僅病患資料</option>
+                            <option value="treatments">僅治療記錄</option>
+                            <option value="assessments">僅評估量表</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="exportToJSON()">匯出 JSON</button>
+                    <button class="btn btn-success" onclick="exportToCSV()">匯出 CSV</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>匯入資料</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label>選擇 JSON 檔案</label>
+                    <input type="file" id="importFile" accept=".json">
+                </div>
+                
+                <button class="btn btn-secondary" onclick="importFromJSON()">匯入資料</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Patient Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="patientModalTitle">新增病患</h2>
+                <button class="modal-close" onclick="closePatientModal()">✕</button>
+            </div>
+            
+            <form id="patientForm" onsubmit="savePatient(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>病歷號 *</label>
+                        <input type="text" id="patientId" required>
+                    </div>
+                    <div class="form-group">
+                        <label>姓名 *</label>
+                        <input type="text" id="patientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>性別</label>
+                        <select id="patientGender">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>出生日期</label>
+                        <input type="date" id="patientBirthDate">
+                    </div>
+                    <div class="form-group">
+                        <label>診斷 *</label>
+                        <input type="text" id="patientDiagnosis" required placeholder="例：重度憂鬱症">
+                    </div>
+                    <div class="form-group">
+                        <label>開始日期 *</label>
+                        <input type="date" id="patientStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>狀態</label>
+                        <select id="patientStatus">
+                            <option value="治療中">治療中</option>
+                            <option value="已完成">已完成</option>
+                            <option value="暫停">暫停</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>計劃療程次數</label>
+                        <input type="number" id="patientPlannedSessions" min="0" placeholder="例：20">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>聯絡電話</label>
+                    <input type="tel" id="patientPhone">
+                </div>
+                
+                <div class="form-group">
+                    <label>備註</label>
+                    <textarea id="patientNotes" placeholder="其他相關資訊"></textarea>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                    <button type="button" class="btn btn-secondary" onclick="closePatientModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Treatment Modal -->
+    <div id="treatmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="treatmentModalTitle">新增治療記錄</h2>
+                <button class="modal-close" onclick="closeTreatmentModal()">✕</button>
+            </div>
+            
+            <form id="treatmentForm" onsubmit="saveTreatment(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>病患 *</label>
+                        <select id="treatmentPatient" required>
+                            <option value="">請選擇病患</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>治療日期 *</label>
+                        <input type="date" id="treatmentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>刺激部位 *</label>
+                        <select id="treatmentSite" required>
+                            <option value="左背外側前額葉 (L-DLPFC)">左背外側前額葉 (L-DLPFC)</option>
+                            <option value="右背外側前額葉 (R-DLPFC)">右背外側前額葉 (R-DLPFC)</option>
+                            <option value="雙側前額葉 (Bilateral DLPFC)">雙側前額葉 (Bilateral DLPFC)</option>
+                            <option value="運動皮質 (Motor Cortex)">運動皮質 (Motor Cortex)</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>強度 (% MT) *</label>
+                        <input type="number" id="treatmentIntensity" required min="0" max="200" placeholder="例：120">
+                    </div>
+                    <div class="form-group">
+                        <label>頻率 (Hz) *</label>
+                        <input type="number" id="treatmentFrequency" required min="0" step="0.1" placeholder="例：10">
+                    </div>
+                    <div class="form-group">
+                        <label>脈衝數 *</label>
+                        <input type="number" id="treatmentPulses" required min="0" placeholder="例：3000">
+                    </div>
+                    <div class="form-group">
+                        <label>序列數 *</label>
+                        <input type="number" id="treatmentTrains" required min="0" placeholder="例：75">
+                    </div>
+                    <div class="form-group">
+                        <label>序列間隔 (秒)</label>
+                        <input type="number" id="treatmentInterval" min="0" placeholder="例：26">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>副作用</label>
+                    <textarea id="treatmentSideEffects" placeholder="記錄任何不適或副作用"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>備註</label>
+                    <textarea id="treatmentNotes" placeholder="其他相關資訊"></textarea>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeTreatmentModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Assessment Modal -->
+    <div id="assessmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="assessmentModalTitle">新增評估記錄</h2>
+                <button class="modal-close" onclick="closeAssessmentModal()">✕</button>
+            </div>
+            
+            <form id="assessmentForm" onsubmit="saveAssessment(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>病患 *</label>
+                        <select id="assessmentPatient" required>
+                            <option value="">請選擇病患</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>評估日期 *</label>
+                        <input type="date" id="assessmentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>量表類型 *</label>
+                        <select id="assessmentType" required>
+                            <option value="HAMD-17">HAMD-17 (漢密爾頓憂鬱量表)</option>
+                            <option value="MADRS">MADRS (蒙哥馬利憂鬱評估量表)</option>
+                            <option value="BDI">BDI (貝克憂鬱量表)</option>
+                            <option value="GAD-7">GAD-7 (廣泛性焦慮量表)</option>
+                            <option value="PANSS">PANSS (陽性與陰性症狀量表)</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>分數 *</label>
+                        <input type="number" id="assessmentScore" required min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>時間點 *</label>
+                        <select id="assessmentTimepoint" required>
+                            <option value="治療前">治療前（Baseline）</option>
+                            <option value="治療中">治療中</option>
+                            <option value="治療後">治療後</option>
+                            <option value="追蹤">追蹤</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>備註</label>
+                    <textarea id="assessmentNotes" placeholder="評估相關備註"></textarea>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAssessmentModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let patients = [];
+        let treatments = [];
+        let assessments = [];
+        let editingPatientIndex = null;
+        let editingTreatmentIndex = null;
+        let editingAssessmentIndex = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateDashboard();
+            renderPatients();
+            renderTreatments();
+            renderAssessments();
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('patientStartDate').value = today;
+            document.getElementById('treatmentDate').value = today;
+            document.getElementById('assessmentDate').value = today;
+        });
+        
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Update patient dropdowns when switching to treatment or assessment tabs
+            if (tabName === 'treatments' || tabName === 'assessments') {
+                updatePatientDropdowns();
+            }
+        }
+        
+        // Local Storage Functions
+        function saveData() {
+            localStorage.setItem('rtms_patients', JSON.stringify(patients));
+            localStorage.setItem('rtms_treatments', JSON.stringify(treatments));
+            localStorage.setItem('rtms_assessments', JSON.stringify(assessments));
+        }
+        
+        function loadData() {
+            const savedPatients = localStorage.getItem('rtms_patients');
+            const savedTreatments = localStorage.getItem('rtms_treatments');
+            const savedAssessments = localStorage.getItem('rtms_assessments');
+            
+            if (savedPatients) patients = JSON.parse(savedPatients);
+            if (savedTreatments) treatments = JSON.parse(savedTreatments);
+            if (savedAssessments) assessments = JSON.parse(savedAssessments);
+        }
+        
+        // Dashboard Functions
+        function updateDashboard() {
+            const totalPatients = patients.length;
+            const activePatients = patients.filter(p => p.status === '治療中').length;
+            const completedPatients = patients.filter(p => p.status === '已完成').length;
+            const totalSessions = treatments.length;
+            
+            document.getElementById('totalPatients').textContent = totalPatients;
+            document.getElementById('activePatients').textContent = activePatients;
+            document.getElementById('completedPatients').textContent = completedPatients;
+            document.getElementById('totalSessions').textContent = totalSessions;
+            
+            // Show recent treatments
+            const recentTreatmentsDiv = document.getElementById('recentTreatments');
+            const recentTreatments = treatments.slice(-5).reverse();
+            
+            if (recentTreatments.length === 0) {
+                recentTreatmentsDiv.innerHTML = '<div class="empty-state"><p>尚無治療記錄</p></div>';
+            } else {
+                let html = '<div class="table-container"><table><thead><tr><th>日期</th><th>病患</th><th>刺激部位</th><th>強度</th></tr></thead><tbody>';
+                recentTreatments.forEach(t => {
+                    html += `<tr>
+                        <td>${t.date}</td>
+                        <td>${t.patientName}</td>
+                        <td>${t.site}</td>
+                        <td>${t.intensity}% MT</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+                recentTreatmentsDiv.innerHTML = html;
+            }
+        }
+        
+        // Patient Functions
+        function openPatientModal(index = null) {
+            editingPatientIndex = index;
+            const modal = document.getElementById('patientModal');
+            const form = document.getElementById('patientForm');
+            
+            if (index !== null) {
+                document.getElementById('patientModalTitle').textContent = '編輯病患';
+                const patient = patients[index];
+                document.getElementById('patientId').value = patient.id;
+                document.getElementById('patientName').value = patient.name;
+                document.getElementById('patientGender').value = patient.gender || '男';
+                document.getElementById('patientBirthDate').value = patient.birthDate || '';
+                document.getElementById('patientDiagnosis').value = patient.diagnosis;
+                document.getElementById('patientStartDate').value = patient.startDate;
+                document.getElementById('patientStatus').value = patient.status;
+                document.getElementById('patientPlannedSessions').value = patient.plannedSessions || '';
+                document.getElementById('patientPhone').value = patient.phone || '';
+                document.getElementById('patientNotes').value = patient.notes || '';
+            } else {
+                document.getElementById('patientModalTitle').textContent = '新增病患';
+                form.reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('patientStartDate').value = today;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closePatientModal() {
+            document.getElementById('patientModal').classList.remove('active');
+            document.getElementById('patientForm').reset();
+            editingPatientIndex = null;
+        }
+        
+        function savePatient(event) {
+            event.preventDefault();
+            
+            const patient = {
+                id: document.getElementById('patientId').value,
+                name: document.getElementById('patientName').value,
+                gender: document.getElementById('patientGender').value,
+                birthDate: document.getElementById('patientBirthDate').value,
+                diagnosis: document.getElementById('patientDiagnosis').value,
+                startDate: document.getElementById('patientStartDate').value,
+                status: document.getElementById('patientStatus').value,
+                plannedSessions: document.getElementById('patientPlannedSessions').value,
+                phone: document.getElementById('patientPhone').value,
+                notes: document.getElementById('patientNotes').value
+            };
+            
+            if (editingPatientIndex !== null) {
+                patients[editingPatientIndex] = patient;
+            } else {
+                patients.push(patient);
+            }
+            
+            saveData();
+            renderPatients();
+            updateDashboard();
+            closePatientModal();
+        }
+        
+        function deletePatient(index) {
+            if (confirm('確定要刪除此病患資料嗎？這將同時刪除相關的治療記錄和評估資料。')) {
+                const patientId = patients[index].id;
+                patients.splice(index, 1);
+                
+                // Also delete related treatments and assessments
+                treatments = treatments.filter(t => t.patientId !== patientId);
+                assessments = assessments.filter(a => a.patientId !== patientId);
+                
+                saveData();
+                renderPatients();
+                renderTreatments();
+                renderAssessments();
+                updateDashboard();
+            }
+        }
+        
+        function renderPatients() {
+            const tbody = document.getElementById('patientsList');
+            
+            if (patients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">尚無病患資料</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            patients.forEach((patient, index) => {
+                const patientTreatments = treatments.filter(t => t.patientId === patient.id);
+                const progress = patient.plannedSessions ? 
+                    `${patientTreatments.length}/${patient.plannedSessions}` : 
+                    `${patientTreatments.length}`;
+                
+                const statusClass = patient.status === '治療中' ? 'badge-active' : 
+                                  patient.status === '已完成' ? 'badge-completed' : 'badge-pending';
+                
+                html += `<tr>
+                    <td>${patient.id}</td>
+                    <td><strong>${patient.name}</strong></td>
+                    <td>${patient.diagnosis}</td>
+                    <td>${patient.startDate}</td>
+                    <td><span class="badge ${statusClass}">${patient.status}</span></td>
+                    <td>${progress}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-small" onclick="openPatientModal(${index})">編輯</button>
+                            <button class="btn btn-danger btn-small" onclick="deletePatient(${index})">刪除</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function searchPatients() {
+            const searchTerm = document.getElementById('patientSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#patientsList tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+        
+        // Treatment Functions
+        function updatePatientDropdowns() {
+            const treatmentSelect = document.getElementById('treatmentPatient');
+            const assessmentSelect = document.getElementById('assessmentPatient');
+            
+            let options = '<option value="">請選擇病患</option>';
+            patients.forEach(patient => {
+                options += `<option value="${patient.id}">${patient.name} (${patient.id})</option>`;
+            });
+            
+            treatmentSelect.innerHTML = options;
+            assessmentSelect.innerHTML = options;
+        }
+        
+        function openTreatmentModal(index = null) {
+            updatePatientDropdowns();
+            editingTreatmentIndex = index;
+            const modal = document.getElementById('treatmentModal');
+            const form = document.getElementById('treatmentForm');
+            
+            if (index !== null) {
+                document.getElementById('treatmentModalTitle').textContent = '編輯治療記錄';
+                const treatment = treatments[index];
+                document.getElementById('treatmentPatient').value = treatment.patientId;
+                document.getElementById('treatmentDate').value = treatment.date;
+                document.getElementById('treatmentSite').value = treatment.site;
+                document.getElementById('treatmentIntensity').value = treatment.intensity;
+                document.getElementById('treatmentFrequency').value = treatment.frequency;
+                document.getElementById('treatmentPulses').value = treatment.pulses;
+                document.getElementById('treatmentTrains').value = treatment.trains;
+                document.getElementById('treatmentInterval').value = treatment.interval || '';
+                document.getElementById('treatmentSideEffects').value = treatment.sideEffects || '';
+                document.getElementById('treatmentNotes').value = treatment.notes || '';
+            } else {
+                document.getElementById('treatmentModalTitle').textContent = '新增治療記錄';
+                form.reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('treatmentDate').value = today;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeTreatmentModal() {
+            document.getElementById('treatmentModal').classList.remove('active');
+            document.getElementById('treatmentForm').reset();
+            editingTreatmentIndex = null;
+        }
+        
+        function saveTreatment(event) {
+            event.preventDefault();
+            
+            const patientId = document.getElementById('treatmentPatient').value;
+            const patient = patients.find(p => p.id === patientId);
+            
+            const treatment = {
+                patientId: patientId,
+                patientName: patient.name,
+                date: document.getElementById('treatmentDate').value,
+                site: document.getElementById('treatmentSite').value,
+                intensity: document.getElementById('treatmentIntensity').value,
+                frequency: document.getElementById('treatmentFrequency').value,
+                pulses: document.getElementById('treatmentPulses').value,
+                trains: document.getElementById('treatmentTrains').value,
+                interval: document.getElementById('treatmentInterval').value,
+                sideEffects: document.getElementById('treatmentSideEffects').value,
+                notes: document.getElementById('treatmentNotes').value
+            };
+            
+            if (editingTreatmentIndex !== null) {
+                treatments[editingTreatmentIndex] = treatment;
+            } else {
+                treatments.push(treatment);
+            }
+            
+            saveData();
+            renderTreatments();
+            updateDashboard();
+            closeTreatmentModal();
+        }
+        
+        function deleteTreatment(index) {
+            if (confirm('確定要刪除此治療記錄嗎？')) {
+                treatments.splice(index, 1);
+                saveData();
+                renderTreatments();
+                updateDashboard();
+            }
+        }
+        
+        function renderTreatments() {
+            const tbody = document.getElementById('treatmentsList');
+            
+            if (treatments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">尚無治療記錄</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            // Sort by date descending
+            const sortedTreatments = [...treatments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedTreatments.forEach((treatment, index) => {
+                const originalIndex = treatments.indexOf(treatment);
+                html += `<tr>
+                    <td>${treatment.date}</td>
+                    <td><strong>${treatment.patientName}</strong></td>
+                    <td>${treatment.site}</td>
+                    <td>${treatment.intensity}%</td>
+                    <td>${treatment.frequency}</td>
+                    <td>${treatment.pulses}</td>
+                    <td>${treatment.trains}</td>
+                    <td>${treatment.notes || '-'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-small" onclick="openTreatmentModal(${originalIndex})">編輯</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteTreatment(${originalIndex})">刪除</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function searchTreatments() {
+            const searchTerm = document.getElementById('treatmentSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#treatmentsList tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+        
+        // Assessment Functions
+        function openAssessmentModal(index = null) {
+            updatePatientDropdowns();
+            editingAssessmentIndex = index;
+            const modal = document.getElementById('assessmentModal');
+            const form = document.getElementById('assessmentForm');
+            
+            if (index !== null) {
+                document.getElementById('assessmentModalTitle').textContent = '編輯評估記錄';
+                const assessment = assessments[index];
+                document.getElementById('assessmentPatient').value = assessment.patientId;
+                document.getElementById('assessmentDate').value = assessment.date;
+                document.getElementById('assessmentType').value = assessment.type;
+                document.getElementById('assessmentScore').value = assessment.score;
+                document.getElementById('assessmentTimepoint').value = assessment.timepoint;
+                document.getElementById('assessmentNotes').value = assessment.notes || '';
+            } else {
+                document.getElementById('assessmentModalTitle').textContent = '新增評估記錄';
+                form.reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('assessmentDate').value = today;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeAssessmentModal() {
+            document.getElementById('assessmentModal').classList.remove('active');
+            document.getElementById('assessmentForm').reset();
+            editingAssessmentIndex = null;
+        }
+        
+        function saveAssessment(event) {
+            event.preventDefault();
+            
+            const patientId = document.getElementById('assessmentPatient').value;
+            const patient = patients.find(p => p.id === patientId);
+            
+            const assessment = {
+                patientId: patientId,
+                patientName: patient.name,
+                date: document.getElementById('assessmentDate').value,
+                type: document.getElementById('assessmentType').value,
+                score: document.getElementById('assessmentScore').value,
+                timepoint: document.getElementById('assessmentTimepoint').value,
+                notes: document.getElementById('assessmentNotes').value
+            };
+            
+            if (editingAssessmentIndex !== null) {
+                assessments[editingAssessmentIndex] = assessment;
+            } else {
+                assessments.push(assessment);
+            }
+            
+            saveData();
+            renderAssessments();
+            closeAssessmentModal();
+        }
+        
+        function deleteAssessment(index) {
+            if (confirm('確定要刪除此評估記錄嗎？')) {
+                assessments.splice(index, 1);
+                saveData();
+                renderAssessments();
+            }
+        }
+        
+        function renderAssessments() {
+            const tbody = document.getElementById('assessmentsList');
+            
+            if (assessments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">尚無評估記錄</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            // Sort by date descending
+            const sortedAssessments = [...assessments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedAssessments.forEach((assessment, index) => {
+                const originalIndex = assessments.indexOf(assessment);
+                html += `<tr>
+                    <td>${assessment.date}</td>
+                    <td><strong>${assessment.patientName}</strong></td>
+                    <td>${assessment.type}</td>
+                    <td>${assessment.score}</td>
+                    <td>${assessment.timepoint}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-small" onclick="openAssessmentModal(${originalIndex})">編輯</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteAssessment(${originalIndex})">刪除</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        // Export Functions
+        function exportToJSON() {
+            const exportType = document.getElementById('exportType').value;
+            let data = {};
+            
+            switch(exportType) {
+                case 'all':
+                    data = { patients, treatments, assessments };
+                    break;
+                case 'patients':
+                    data = { patients };
+                    break;
+                case 'treatments':
+                    data = { treatments };
+                    break;
+                case 'assessments':
+                    data = { assessments };
+                    break;
+            }
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `RTMS_資料_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportToCSV() {
+            const exportType = document.getElementById('exportType').value;
+            let csv = '';
+            
+            if (exportType === 'all' || exportType === 'patients') {
+                csv += '病患資料\n';
+                csv += '病歷號,姓名,性別,出生日期,診斷,開始日期,狀態,計劃療程,聯絡電話,備註\n';
+                patients.forEach(p => {
+                    csv += `${p.id},${p.name},${p.gender},${p.birthDate},${p.diagnosis},${p.startDate},${p.status},${p.plannedSessions},${p.phone},"${p.notes}"\n`;
+                });
+                csv += '\n';
+            }
+            
+            if (exportType === 'all' || exportType === 'treatments') {
+                csv += '治療記錄\n';
+                csv += '病歷號,病患姓名,日期,刺激部位,強度,頻率,脈衝數,序列數,序列間隔,副作用,備註\n';
+                treatments.forEach(t => {
+                    csv += `${t.patientId},${t.patientName},${t.date},${t.site},${t.intensity},${t.frequency},${t.pulses},${t.trains},${t.interval},"${t.sideEffects}","${t.notes}"\n`;
+                });
+                csv += '\n';
+            }
+            
+            if (exportType === 'all' || exportType === 'assessments') {
+                csv += '評估記錄\n';
+                csv += '病歷號,病患姓名,日期,量表類型,分數,時間點,備註\n';
+                assessments.forEach(a => {
+                    csv += `${a.patientId},${a.patientName},${a.date},${a.type},${a.score},${a.timepoint},"${a.notes}"\n`;
+                });
+            }
+            
+            const BOM = '\uFEFF';
+            const dataBlob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `RTMS_資料_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function importFromJSON() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('請選擇檔案');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.patients) patients = data.patients;
+                    if (data.treatments) treatments = data.treatments;
+                    if (data.assessments) assessments = data.assessments;
+                    
+                    saveData();
+                    renderPatients();
+                    renderTreatments();
+                    renderAssessments();
+                    updateDashboard();
+                    
+                    alert('資料匯入成功！');
+                } catch (error) {
+                    alert('檔案格式錯誤，請確認是否為正確的 JSON 檔案');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
