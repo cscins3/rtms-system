@@ -35,6 +35,107 @@
             line-height: 1.6;
         }
         
+        /* Login Screen */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        
+        .login-box p {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .login-form label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .login-form .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        .login-form .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Main App - Hidden until login */
+        .app-container {
+            display: none;
+        }
+        
+        .app-container.show {
+            display: block;
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -49,17 +150,50 @@
             border-radius: 16px;
             margin-bottom: 2rem;
             box-shadow: 0 8px 24px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .header h1 {
+        .header-left h1 {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
         
-        .header p {
+        .header-left p {
             opacity: 0.9;
             font-weight: 300;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-email {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         /* Navigation */
@@ -346,13 +480,6 @@
             color: var(--text-secondary);
         }
         
-        .empty-state svg {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 1rem;
-            opacity: 0.3;
-        }
-        
         /* Modal */
         .modal {
             display: none;
@@ -406,180 +533,236 @@
             background: var(--bg-main);
             color: var(--text-primary);
         }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🧠 RTMS 病患登錄系統</h1>
-            <p>重複經顱磁刺激治療管理平台 | Repetitive Transcranial Magnetic Stimulation</p>
+    <!-- Login Screen -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-box">
+            <h1>🧠 RTMS 系統</h1>
+            <p>病患登錄管理平台</p>
+            
+            <div id="errorMessage" class="error-message"></div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label>密碼</label>
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login">登入</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
+                首次使用？請使用您的 Email 和密碼註冊
+            </div>
         </div>
-        
-        <!-- Navigation -->
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('dashboard')">總覽</button>
-            <button class="nav-tab" onclick="switchTab('patients')">病患管理</button>
-            <button class="nav-tab" onclick="switchTab('treatments')">治療記錄</button>
-            <button class="nav-tab" onclick="switchTab('assessments')">評估量表</button>
-            <button class="nav-tab" onclick="switchTab('export')">匯出資料</button>
-        </div>
-        
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3 id="totalPatients">0</h3>
-                    <p>總病患數</p>
+    </div>
+    
+    <!-- Main App -->
+    <div id="appContainer" class="app-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <h1>🧠 RTMS 病患登錄系統</h1>
+                    <p>重複經顱磁刺激治療管理平台 | Repetitive Transcranial Magnetic Stimulation</p>
                 </div>
-                <div class="stat-card">
-                    <h3 id="activePatients">0</h3>
-                    <p>治療中</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="completedPatients">0</h3>
-                    <p>已完成</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="totalSessions">0</h3>
-                    <p>總治療次數</p>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-email" id="userEmail"></div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">登出</button>
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-header">
-                    <h2>最近治療記錄</h2>
-                </div>
-                <div id="recentTreatments"></div>
+            <!-- Loading -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 1rem;">載入中...</p>
             </div>
-        </div>
-        
-        <!-- Patients Tab -->
-        <div id="patients" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2>病患列表</h2>
-                    <button class="btn btn-primary" onclick="openPatientModal()">+ 新增病患</button>
-                </div>
-                
-                <div class="search-bar">
-                    <input type="text" id="patientSearch" placeholder="搜尋病患（姓名、病歷號）" onkeyup="searchPatients()">
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>病歷號</th>
-                                <th>姓名</th>
-                                <th>診斷</th>
-                                <th>開始日期</th>
-                                <th>狀態</th>
-                                <th>療程進度</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="patientsList"></tbody>
-                    </table>
-                </div>
+            
+            <!-- Navigation -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('dashboard')">總覽</button>
+                <button class="nav-tab" onclick="switchTab('patients')">病患管理</button>
+                <button class="nav-tab" onclick="switchTab('treatments')">治療記錄</button>
+                <button class="nav-tab" onclick="switchTab('assessments')">評估量表</button>
+                <button class="nav-tab" onclick="switchTab('export')">匯出資料</button>
             </div>
-        </div>
-        
-        <!-- Treatments Tab -->
-        <div id="treatments" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2>治療記錄</h2>
-                    <button class="btn btn-primary" onclick="openTreatmentModal()">+ 新增治療記錄</button>
-                </div>
-                
-                <div class="search-bar">
-                    <input type="text" id="treatmentSearch" placeholder="搜尋病患姓名" onkeyup="searchTreatments()">
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>日期</th>
-                                <th>病患</th>
-                                <th>刺激部位</th>
-                                <th>強度 (% MT)</th>
-                                <th>頻率 (Hz)</th>
-                                <th>脈衝數</th>
-                                <th>序列數</th>
-                                <th>備註</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="treatmentsList"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Assessments Tab -->
-        <div id="assessments" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2>評估量表記錄</h2>
-                    <button class="btn btn-primary" onclick="openAssessmentModal()">+ 新增評估</button>
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>日期</th>
-                                <th>病患</th>
-                                <th>量表類型</th>
-                                <th>分數</th>
-                                <th>時間點</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assessmentsList"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Export Tab -->
-        <div id="export" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2>匯出資料</h2>
-                </div>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>選擇匯出類型</label>
-                        <select id="exportType">
-                            <option value="all">完整資料（病患+治療+評估）</option>
-                            <option value="patients">僅病患資料</option>
-                            <option value="treatments">僅治療記錄</option>
-                            <option value="assessments">僅評估量表</option>
-                        </select>
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalPatients">0</h3>
+                        <p>總病患數</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="activePatients">0</h3>
+                        <p>治療中</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="completedPatients">0</h3>
+                        <p>已完成</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalSessions">0</h3>
+                        <p>總治療次數</p>
                     </div>
                 </div>
                 
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="exportToJSON()">匯出 JSON</button>
-                    <button class="btn btn-success" onclick="exportToCSV()">匯出 CSV</button>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>最近治療記錄</h2>
+                    </div>
+                    <div id="recentTreatments"></div>
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-header">
-                    <h2>匯入資料</h2>
+            <!-- Patients Tab -->
+            <div id="patients" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>病患列表</h2>
+                        <button class="btn btn-primary" onclick="openPatientModal()">+ 新增病患</button>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="patientSearch" placeholder="搜尋病患（姓名、病歷號）" onkeyup="searchPatients()">
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>病歷號</th>
+                                    <th>姓名</th>
+                                    <th>診斷</th>
+                                    <th>開始日期</th>
+                                    <th>狀態</th>
+                                    <th>療程進度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientsList"></tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>選擇 JSON 檔案</label>
-                    <input type="file" id="importFile" accept=".json">
+            </div>
+            
+            <!-- Treatments Tab -->
+            <div id="treatments" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>治療記錄</h2>
+                        <button class="btn btn-primary" onclick="openTreatmentModal()">+ 新增治療記錄</button>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="treatmentSearch" placeholder="搜尋病患姓名" onkeyup="searchTreatments()">
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>病患</th>
+                                    <th>刺激部位</th>
+                                    <th>強度 (% MT)</th>
+                                    <th>頻率 (Hz)</th>
+                                    <th>脈衝數</th>
+                                    <th>序列數</th>
+                                    <th>備註</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="treatmentsList"></tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <button class="btn btn-secondary" onclick="importFromJSON()">匯入資料</button>
+            </div>
+            
+            <!-- Assessments Tab -->
+            <div id="assessments" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>評估量表記錄</h2>
+                        <button class="btn btn-primary" onclick="openAssessmentModal()">+ 新增評估</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>病患</th>
+                                    <th>量表類型</th>
+                                    <th>分數</th>
+                                    <th>時間點</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assessmentsList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Export Tab -->
+            <div id="export" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>匯出資料</h2>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>選擇匯出類型</label>
+                            <select id="exportType">
+                                <option value="all">完整資料（病患+治療+評估）</option>
+                                <option value="patients">僅病患資料</option>
+                                <option value="treatments">僅治療記錄</option>
+                                <option value="assessments">僅評估量表</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="exportToJSON()">匯出 JSON</button>
+                        <button class="btn btn-success" onclick="exportToCSV()">匯出 CSV</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -783,84 +966,312 @@
         </div>
     </div>
 
-    <script>
-        // Data Storage
-        let patients = [];
-        let treatments = [];
-        let assessments = [];
-        let editingPatientIndex = null;
-        let editingTreatmentIndex = null;
-        let editingAssessmentIndex = null;
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKNfhLeh0Lu9lhDgfpJuaiSKH8B3f9228",
+            authDomain: "rtms-system.firebaseapp.com",
+            projectId: "rtms-system",
+            storageBucket: "rtms-system.firebasestorage.app",
+            messagingSenderId: "417832307154",
+            appId: "1:417832307154:web:9d53104fc0cb1ed229600b"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global variables
+        window.currentUser = null;
+        window.patients = [];
+        window.treatments = [];
+        window.assessments = [];
+        window.editingPatientId = null;
+        window.editingTreatmentId = null;
+        window.editingAssessmentId = null;
         
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            updateDashboard();
-            renderPatients();
-            renderTreatments();
-            renderAssessments();
-            
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('patientStartDate').value = today;
-            document.getElementById('treatmentDate').value = today;
-            document.getElementById('assessmentDate').value = today;
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.currentUser = user;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').classList.add('show');
+                document.getElementById('userEmail').textContent = user.email;
+                loadAllData();
+            } else {
+                window.currentUser = null;
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('appContainer').classList.remove('show');
+            }
         });
-        
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            try {
+                // Try to sign in
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    // If user not found, try to create account
+                    try {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        errorDiv.textContent = '帳號已建立並登入成功！';
+                        errorDiv.style.background = '#d1fae5';
+                        errorDiv.style.color = '#065f46';
+                        errorDiv.classList.add('show');
+                        setTimeout(() => errorDiv.classList.remove('show'), 3000);
+                    } catch (createError) {
+                        errorDiv.textContent = '建立帳號失敗：' + createError.message;
+                        errorDiv.classList.add('show');
+                    }
+                } else if (error.code === 'auth/wrong-password') {
+                    errorDiv.textContent = '密碼錯誤，請重試';
+                    errorDiv.classList.add('show');
+                } else {
+                    errorDiv.textContent = '登入失敗：' + error.message;
+                    errorDiv.classList.add('show');
+                }
+            }
+        });
+
+        // Logout function
+        window.logout = async () => {
+            await signOut(auth);
+        };
+
+        // Load all data from Firestore
+        async function loadAllData() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('show');
+            
+            try {
+                // Load patients
+                const patientsQuery = query(collection(db, 'patients'), where('userId', '==', window.currentUser.uid));
+                const patientsSnapshot = await getDocs(patientsQuery);
+                window.patients = patientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Load treatments
+                const treatmentsQuery = query(collection(db, 'treatments'), where('userId', '==', window.currentUser.uid));
+                const treatmentsSnapshot = await getDocs(treatmentsQuery);
+                window.treatments = treatmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Load assessments
+                const assessmentsQuery = query(collection(db, 'assessments'), where('userId', '==', window.currentUser.uid));
+                const assessmentsSnapshot = await getDocs(assessmentsQuery);
+                window.assessments = assessmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                renderPatients();
+                renderTreatments();
+                renderAssessments();
+                updateDashboard();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('載入資料時發生錯誤：' + error.message);
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // Save patient to Firestore
+        window.savePatient = async (event) => {
+            event.preventDefault();
+            
+            const patientData = {
+                userId: window.currentUser.uid,
+                patientId: document.getElementById('patientId').value,
+                name: document.getElementById('patientName').value,
+                gender: document.getElementById('patientGender').value,
+                birthDate: document.getElementById('patientBirthDate').value,
+                diagnosis: document.getElementById('patientDiagnosis').value,
+                startDate: document.getElementById('patientStartDate').value,
+                status: document.getElementById('patientStatus').value,
+                plannedSessions: document.getElementById('patientPlannedSessions').value,
+                phone: document.getElementById('patientPhone').value,
+                notes: document.getElementById('patientNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                if (window.editingPatientId) {
+                    await updateDoc(doc(db, 'patients', window.editingPatientId), patientData);
+                } else {
+                    await addDoc(collection(db, 'patients'), patientData);
+                }
+                
+                await loadAllData();
+                closePatientModal();
+            } catch (error) {
+                alert('儲存失敗：' + error.message);
+            }
+        };
+
+        // Delete patient from Firestore
+        window.deletePatient = async (id) => {
+            if (!confirm('確定要刪除此病患資料嗎？這將同時刪除相關的治療記錄和評估資料。')) return;
+            
+            try {
+                const patient = window.patients.find(p => p.id === id);
+                
+                // Delete patient
+                await deleteDoc(doc(db, 'patients', id));
+                
+                // Delete related treatments
+                const relatedTreatments = window.treatments.filter(t => t.patientId === patient.patientId);
+                for (const treatment of relatedTreatments) {
+                    await deleteDoc(doc(db, 'treatments', treatment.id));
+                }
+                
+                // Delete related assessments
+                const relatedAssessments = window.assessments.filter(a => a.patientId === patient.patientId);
+                for (const assessment of relatedAssessments) {
+                    await deleteDoc(doc(db, 'assessments', assessment.id));
+                }
+                
+                await loadAllData();
+            } catch (error) {
+                alert('刪除失敗：' + error.message);
+            }
+        };
+
+        // Save treatment to Firestore
+        window.saveTreatment = async (event) => {
+            event.preventDefault();
+            
+            const patientId = document.getElementById('treatmentPatient').value;
+            const patient = window.patients.find(p => p.patientId === patientId);
+            
+            const treatmentData = {
+                userId: window.currentUser.uid,
+                patientId: patientId,
+                patientName: patient.name,
+                date: document.getElementById('treatmentDate').value,
+                site: document.getElementById('treatmentSite').value,
+                intensity: document.getElementById('treatmentIntensity').value,
+                frequency: document.getElementById('treatmentFrequency').value,
+                pulses: document.getElementById('treatmentPulses').value,
+                trains: document.getElementById('treatmentTrains').value,
+                interval: document.getElementById('treatmentInterval').value,
+                sideEffects: document.getElementById('treatmentSideEffects').value,
+                notes: document.getElementById('treatmentNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                if (window.editingTreatmentId) {
+                    await updateDoc(doc(db, 'treatments', window.editingTreatmentId), treatmentData);
+                } else {
+                    await addDoc(collection(db, 'treatments'), treatmentData);
+                }
+                
+                await loadAllData();
+                closeTreatmentModal();
+            } catch (error) {
+                alert('儲存失敗：' + error.message);
+            }
+        };
+
+        // Delete treatment from Firestore
+        window.deleteTreatment = async (id) => {
+            if (!confirm('確定要刪除此治療記錄嗎？')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'treatments', id));
+                await loadAllData();
+            } catch (error) {
+                alert('刪除失敗：' + error.message);
+            }
+        };
+
+        // Save assessment to Firestore
+        window.saveAssessment = async (event) => {
+            event.preventDefault();
+            
+            const patientId = document.getElementById('assessmentPatient').value;
+            const patient = window.patients.find(p => p.patientId === patientId);
+            
+            const assessmentData = {
+                userId: window.currentUser.uid,
+                patientId: patientId,
+                patientName: patient.name,
+                date: document.getElementById('assessmentDate').value,
+                type: document.getElementById('assessmentType').value,
+                score: document.getElementById('assessmentScore').value,
+                timepoint: document.getElementById('assessmentTimepoint').value,
+                notes: document.getElementById('assessmentNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                if (window.editingAssessmentId) {
+                    await updateDoc(doc(db, 'assessments', window.editingAssessmentId), assessmentData);
+                } else {
+                    await addDoc(collection(db, 'assessments'), assessmentData);
+                }
+                
+                await loadAllData();
+                closeAssessmentModal();
+            } catch (error) {
+                alert('儲存失敗：' + error.message);
+            }
+        };
+
+        // Delete assessment from Firestore
+        window.deleteAssessment = async (id) => {
+            if (!confirm('確定要刪除此評估記錄嗎？')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'assessments', id));
+                await loadAllData();
+            } catch (error) {
+                alert('刪除失敗：' + error.message);
+            }
+        };
+    </script>
+
+    <script>
         // Tab Switching
         function switchTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // Remove active from all nav tabs
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // Show selected tab
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
             
-            // Update patient dropdowns when switching to treatment or assessment tabs
             if (tabName === 'treatments' || tabName === 'assessments') {
                 updatePatientDropdowns();
             }
         }
         
-        // Local Storage Functions
-        function saveData() {
-            localStorage.setItem('rtms_patients', JSON.stringify(patients));
-            localStorage.setItem('rtms_treatments', JSON.stringify(treatments));
-            localStorage.setItem('rtms_assessments', JSON.stringify(assessments));
-        }
-        
-        function loadData() {
-            const savedPatients = localStorage.getItem('rtms_patients');
-            const savedTreatments = localStorage.getItem('rtms_treatments');
-            const savedAssessments = localStorage.getItem('rtms_assessments');
-            
-            if (savedPatients) patients = JSON.parse(savedPatients);
-            if (savedTreatments) treatments = JSON.parse(savedTreatments);
-            if (savedAssessments) assessments = JSON.parse(savedAssessments);
-        }
-        
         // Dashboard Functions
         function updateDashboard() {
-            const totalPatients = patients.length;
-            const activePatients = patients.filter(p => p.status === '治療中').length;
-            const completedPatients = patients.filter(p => p.status === '已完成').length;
-            const totalSessions = treatments.length;
+            const totalPatients = window.patients.length;
+            const activePatients = window.patients.filter(p => p.status === '治療中').length;
+            const completedPatients = window.patients.filter(p => p.status === '已完成').length;
+            const totalSessions = window.treatments.length;
             
             document.getElementById('totalPatients').textContent = totalPatients;
             document.getElementById('activePatients').textContent = activePatients;
             document.getElementById('completedPatients').textContent = completedPatients;
             document.getElementById('totalSessions').textContent = totalSessions;
             
-            // Show recent treatments
             const recentTreatmentsDiv = document.getElementById('recentTreatments');
-            const recentTreatments = treatments.slice(-5).reverse();
+            const recentTreatments = window.treatments.slice(-5).reverse();
             
             if (recentTreatments.length === 0) {
                 recentTreatmentsDiv.innerHTML = '<div class="empty-state"><p>尚無治療記錄</p></div>';
@@ -880,15 +1291,15 @@
         }
         
         // Patient Functions
-        function openPatientModal(index = null) {
-            editingPatientIndex = index;
+        function openPatientModal(id = null) {
+            window.editingPatientId = id;
             const modal = document.getElementById('patientModal');
             const form = document.getElementById('patientForm');
             
-            if (index !== null) {
+            if (id) {
                 document.getElementById('patientModalTitle').textContent = '編輯病患';
-                const patient = patients[index];
-                document.getElementById('patientId').value = patient.id;
+                const patient = window.patients.find(p => p.id === id);
+                document.getElementById('patientId').value = patient.patientId;
                 document.getElementById('patientName').value = patient.name;
                 document.getElementById('patientGender').value = patient.gender || '男';
                 document.getElementById('patientBirthDate').value = patient.birthDate || '';
@@ -911,65 +1322,20 @@
         function closePatientModal() {
             document.getElementById('patientModal').classList.remove('active');
             document.getElementById('patientForm').reset();
-            editingPatientIndex = null;
-        }
-        
-        function savePatient(event) {
-            event.preventDefault();
-            
-            const patient = {
-                id: document.getElementById('patientId').value,
-                name: document.getElementById('patientName').value,
-                gender: document.getElementById('patientGender').value,
-                birthDate: document.getElementById('patientBirthDate').value,
-                diagnosis: document.getElementById('patientDiagnosis').value,
-                startDate: document.getElementById('patientStartDate').value,
-                status: document.getElementById('patientStatus').value,
-                plannedSessions: document.getElementById('patientPlannedSessions').value,
-                phone: document.getElementById('patientPhone').value,
-                notes: document.getElementById('patientNotes').value
-            };
-            
-            if (editingPatientIndex !== null) {
-                patients[editingPatientIndex] = patient;
-            } else {
-                patients.push(patient);
-            }
-            
-            saveData();
-            renderPatients();
-            updateDashboard();
-            closePatientModal();
-        }
-        
-        function deletePatient(index) {
-            if (confirm('確定要刪除此病患資料嗎？這將同時刪除相關的治療記錄和評估資料。')) {
-                const patientId = patients[index].id;
-                patients.splice(index, 1);
-                
-                // Also delete related treatments and assessments
-                treatments = treatments.filter(t => t.patientId !== patientId);
-                assessments = assessments.filter(a => a.patientId !== patientId);
-                
-                saveData();
-                renderPatients();
-                renderTreatments();
-                renderAssessments();
-                updateDashboard();
-            }
+            window.editingPatientId = null;
         }
         
         function renderPatients() {
             const tbody = document.getElementById('patientsList');
             
-            if (patients.length === 0) {
+            if (window.patients.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="empty-state">尚無病患資料</td></tr>';
                 return;
             }
             
             let html = '';
-            patients.forEach((patient, index) => {
-                const patientTreatments = treatments.filter(t => t.patientId === patient.id);
+            window.patients.forEach((patient) => {
+                const patientTreatments = window.treatments.filter(t => t.patientId === patient.patientId);
                 const progress = patient.plannedSessions ? 
                     `${patientTreatments.length}/${patient.plannedSessions}` : 
                     `${patientTreatments.length}`;
@@ -978,7 +1344,7 @@
                                   patient.status === '已完成' ? 'badge-completed' : 'badge-pending';
                 
                 html += `<tr>
-                    <td>${patient.id}</td>
+                    <td>${patient.patientId}</td>
                     <td><strong>${patient.name}</strong></td>
                     <td>${patient.diagnosis}</td>
                     <td>${patient.startDate}</td>
@@ -986,8 +1352,8 @@
                     <td>${progress}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-primary btn-small" onclick="openPatientModal(${index})">編輯</button>
-                            <button class="btn btn-danger btn-small" onclick="deletePatient(${index})">刪除</button>
+                            <button class="btn btn-primary btn-small" onclick="openPatientModal('${patient.id}')">編輯</button>
+                            <button class="btn btn-danger btn-small" onclick="deletePatient('${patient.id}')">刪除</button>
                         </div>
                     </td>
                 </tr>`;
@@ -1012,23 +1378,23 @@
             const assessmentSelect = document.getElementById('assessmentPatient');
             
             let options = '<option value="">請選擇病患</option>';
-            patients.forEach(patient => {
-                options += `<option value="${patient.id}">${patient.name} (${patient.id})</option>`;
+            window.patients.forEach(patient => {
+                options += `<option value="${patient.patientId}">${patient.name} (${patient.patientId})</option>`;
             });
             
             treatmentSelect.innerHTML = options;
             assessmentSelect.innerHTML = options;
         }
         
-        function openTreatmentModal(index = null) {
+        function openTreatmentModal(id = null) {
             updatePatientDropdowns();
-            editingTreatmentIndex = index;
+            window.editingTreatmentId = id;
             const modal = document.getElementById('treatmentModal');
             const form = document.getElementById('treatmentForm');
             
-            if (index !== null) {
+            if (id) {
                 document.getElementById('treatmentModalTitle').textContent = '編輯治療記錄';
-                const treatment = treatments[index];
+                const treatment = window.treatments.find(t => t.id === id);
                 document.getElementById('treatmentPatient').value = treatment.patientId;
                 document.getElementById('treatmentDate').value = treatment.date;
                 document.getElementById('treatmentSite').value = treatment.site;
@@ -1052,64 +1418,21 @@
         function closeTreatmentModal() {
             document.getElementById('treatmentModal').classList.remove('active');
             document.getElementById('treatmentForm').reset();
-            editingTreatmentIndex = null;
-        }
-        
-        function saveTreatment(event) {
-            event.preventDefault();
-            
-            const patientId = document.getElementById('treatmentPatient').value;
-            const patient = patients.find(p => p.id === patientId);
-            
-            const treatment = {
-                patientId: patientId,
-                patientName: patient.name,
-                date: document.getElementById('treatmentDate').value,
-                site: document.getElementById('treatmentSite').value,
-                intensity: document.getElementById('treatmentIntensity').value,
-                frequency: document.getElementById('treatmentFrequency').value,
-                pulses: document.getElementById('treatmentPulses').value,
-                trains: document.getElementById('treatmentTrains').value,
-                interval: document.getElementById('treatmentInterval').value,
-                sideEffects: document.getElementById('treatmentSideEffects').value,
-                notes: document.getElementById('treatmentNotes').value
-            };
-            
-            if (editingTreatmentIndex !== null) {
-                treatments[editingTreatmentIndex] = treatment;
-            } else {
-                treatments.push(treatment);
-            }
-            
-            saveData();
-            renderTreatments();
-            updateDashboard();
-            closeTreatmentModal();
-        }
-        
-        function deleteTreatment(index) {
-            if (confirm('確定要刪除此治療記錄嗎？')) {
-                treatments.splice(index, 1);
-                saveData();
-                renderTreatments();
-                updateDashboard();
-            }
+            window.editingTreatmentId = null;
         }
         
         function renderTreatments() {
             const tbody = document.getElementById('treatmentsList');
             
-            if (treatments.length === 0) {
+            if (window.treatments.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="9" class="empty-state">尚無治療記錄</td></tr>';
                 return;
             }
             
             let html = '';
-            // Sort by date descending
-            const sortedTreatments = [...treatments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedTreatments = [...window.treatments].sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            sortedTreatments.forEach((treatment, index) => {
-                const originalIndex = treatments.indexOf(treatment);
+            sortedTreatments.forEach((treatment) => {
                 html += `<tr>
                     <td>${treatment.date}</td>
                     <td><strong>${treatment.patientName}</strong></td>
@@ -1121,8 +1444,8 @@
                     <td>${treatment.notes || '-'}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-primary btn-small" onclick="openTreatmentModal(${originalIndex})">編輯</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteTreatment(${originalIndex})">刪除</button>
+                            <button class="btn btn-primary btn-small" onclick="openTreatmentModal('${treatment.id}')">編輯</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteTreatment('${treatment.id}')">刪除</button>
                         </div>
                     </td>
                 </tr>`;
@@ -1142,15 +1465,15 @@
         }
         
         // Assessment Functions
-        function openAssessmentModal(index = null) {
+        function openAssessmentModal(id = null) {
             updatePatientDropdowns();
-            editingAssessmentIndex = index;
+            window.editingAssessmentId = id;
             const modal = document.getElementById('assessmentModal');
             const form = document.getElementById('assessmentForm');
             
-            if (index !== null) {
+            if (id) {
                 document.getElementById('assessmentModalTitle').textContent = '編輯評估記錄';
-                const assessment = assessments[index];
+                const assessment = window.assessments.find(a => a.id === id);
                 document.getElementById('assessmentPatient').value = assessment.patientId;
                 document.getElementById('assessmentDate').value = assessment.date;
                 document.getElementById('assessmentType').value = assessment.type;
@@ -1170,58 +1493,21 @@
         function closeAssessmentModal() {
             document.getElementById('assessmentModal').classList.remove('active');
             document.getElementById('assessmentForm').reset();
-            editingAssessmentIndex = null;
-        }
-        
-        function saveAssessment(event) {
-            event.preventDefault();
-            
-            const patientId = document.getElementById('assessmentPatient').value;
-            const patient = patients.find(p => p.id === patientId);
-            
-            const assessment = {
-                patientId: patientId,
-                patientName: patient.name,
-                date: document.getElementById('assessmentDate').value,
-                type: document.getElementById('assessmentType').value,
-                score: document.getElementById('assessmentScore').value,
-                timepoint: document.getElementById('assessmentTimepoint').value,
-                notes: document.getElementById('assessmentNotes').value
-            };
-            
-            if (editingAssessmentIndex !== null) {
-                assessments[editingAssessmentIndex] = assessment;
-            } else {
-                assessments.push(assessment);
-            }
-            
-            saveData();
-            renderAssessments();
-            closeAssessmentModal();
-        }
-        
-        function deleteAssessment(index) {
-            if (confirm('確定要刪除此評估記錄嗎？')) {
-                assessments.splice(index, 1);
-                saveData();
-                renderAssessments();
-            }
+            window.editingAssessmentId = null;
         }
         
         function renderAssessments() {
             const tbody = document.getElementById('assessmentsList');
             
-            if (assessments.length === 0) {
+            if (window.assessments.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="empty-state">尚無評估記錄</td></tr>';
                 return;
             }
             
             let html = '';
-            // Sort by date descending
-            const sortedAssessments = [...assessments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedAssessments = [...window.assessments].sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            sortedAssessments.forEach((assessment, index) => {
-                const originalIndex = assessments.indexOf(assessment);
+            sortedAssessments.forEach((assessment) => {
                 html += `<tr>
                     <td>${assessment.date}</td>
                     <td><strong>${assessment.patientName}</strong></td>
@@ -1230,8 +1516,8 @@
                     <td>${assessment.timepoint}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-primary btn-small" onclick="openAssessmentModal(${originalIndex})">編輯</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteAssessment(${originalIndex})">刪除</button>
+                            <button class="btn btn-primary btn-small" onclick="openAssessmentModal('${assessment.id}')">編輯</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteAssessment('${assessment.id}')">刪除</button>
                         </div>
                     </td>
                 </tr>`;
@@ -1247,16 +1533,16 @@
             
             switch(exportType) {
                 case 'all':
-                    data = { patients, treatments, assessments };
+                    data = { patients: window.patients, treatments: window.treatments, assessments: window.assessments };
                     break;
                 case 'patients':
-                    data = { patients };
+                    data = { patients: window.patients };
                     break;
                 case 'treatments':
-                    data = { treatments };
+                    data = { treatments: window.treatments };
                     break;
                 case 'assessments':
-                    data = { assessments };
+                    data = { assessments: window.assessments };
                     break;
             }
             
@@ -1277,8 +1563,8 @@
             if (exportType === 'all' || exportType === 'patients') {
                 csv += '病患資料\n';
                 csv += '病歷號,姓名,性別,出生日期,診斷,開始日期,狀態,計劃療程,聯絡電話,備註\n';
-                patients.forEach(p => {
-                    csv += `${p.id},${p.name},${p.gender},${p.birthDate},${p.diagnosis},${p.startDate},${p.status},${p.plannedSessions},${p.phone},"${p.notes}"\n`;
+                window.patients.forEach(p => {
+                    csv += `${p.patientId},${p.name},${p.gender},${p.birthDate},${p.diagnosis},${p.startDate},${p.status},${p.plannedSessions},${p.phone},"${p.notes}"\n`;
                 });
                 csv += '\n';
             }
@@ -1286,7 +1572,7 @@
             if (exportType === 'all' || exportType === 'treatments') {
                 csv += '治療記錄\n';
                 csv += '病歷號,病患姓名,日期,刺激部位,強度,頻率,脈衝數,序列數,序列間隔,副作用,備註\n';
-                treatments.forEach(t => {
+                window.treatments.forEach(t => {
                     csv += `${t.patientId},${t.patientName},${t.date},${t.site},${t.intensity},${t.frequency},${t.pulses},${t.trains},${t.interval},"${t.sideEffects}","${t.notes}"\n`;
                 });
                 csv += '\n';
@@ -1295,7 +1581,7 @@
             if (exportType === 'all' || exportType === 'assessments') {
                 csv += '評估記錄\n';
                 csv += '病歷號,病患姓名,日期,量表類型,分數,時間點,備註\n';
-                assessments.forEach(a => {
+                window.assessments.forEach(a => {
                     csv += `${a.patientId},${a.patientName},${a.date},${a.type},${a.score},${a.timepoint},"${a.notes}"\n`;
                 });
             }
@@ -1308,39 +1594,6 @@
             link.download = `RTMS_資料_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
             URL.revokeObjectURL(url);
-        }
-        
-        function importFromJSON() {
-            const fileInput = document.getElementById('importFile');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('請選擇檔案');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    if (data.patients) patients = data.patients;
-                    if (data.treatments) treatments = data.treatments;
-                    if (data.assessments) assessments = data.assessments;
-                    
-                    saveData();
-                    renderPatients();
-                    renderTreatments();
-                    renderAssessments();
-                    updateDashboard();
-                    
-                    alert('資料匯入成功！');
-                } catch (error) {
-                    alert('檔案格式錯誤，請確認是否為正確的 JSON 檔案');
-                }
-            };
-            
-            reader.readAsText(file);
         }
     </script>
 </body>
